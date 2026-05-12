@@ -1,0 +1,51 @@
+type Query {
+  userTopAlbums(
+    user: String!
+    period: Period
+    limit: Int
+    page: Int
+  ): TopAlbumsResponse!
+}
+
+type TopAlbumsResponse {
+  albums: [Album!]!
+  meta: PaginationMeta!
+}
+
+type Album {
+  name: String!
+  playcount: String!
+  mbid: String
+  url: String!
+  artist: Artist!
+  images: [AlbumImage!]!
+  rank: Int!
+}
+
+type Artist {
+  name: String!
+  mbid: String
+  url: String!
+}
+
+type AlbumImage {
+  url: String!
+  size: String!
+}
+
+type PaginationMeta {
+  user: String!
+  totalPages: String!
+  page: String!
+  perPage: String!
+  total: String!
+}
+
+enum Period {
+  OVERALL
+  SEVEN_DAY
+  ONE_MONTH
+  THREE_MONTH
+  SIX_MONTH
+  TWELVE_MONTH
+}
