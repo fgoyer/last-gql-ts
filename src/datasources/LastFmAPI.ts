@@ -47,6 +47,26 @@ export class LastFmAPI extends RESTDataSource {
     return this.transformTopAlbums(response);
   }
 
+  async getUserTopArtists(
+  user: string,
+  period = "OVERALL",
+  limit = 10,
+  page = 1
+) {
+  const response = await this.get("", {
+    params: {
+      ...this.baseParams(),
+      method: "user.getTopArtists",
+      user,
+      period: PERIOD_MAP[period] ?? "overall",
+      limit: String(limit),
+      page: String(page),
+    },
+  });
+
+  return this.transformTopArtists(response);
+}
+
   // Transforms Last.fm's raw REST response into our clean GraphQL shape
   private transformTopAlbums(raw: any) {
     const { topalbums } = raw;
@@ -78,4 +98,30 @@ export class LastFmAPI extends RESTDataSource {
       },
     };
   }
+
+  private transformTopArtists(raw: any) {
+  const { topartists } = raw;
+  const { artist, "@attr": attr } = topartists;
+
+  return {
+    artists: artist.map((a: any) => ({
+      name: a.name,
+      playcount: a.playcount,
+      mbid: a.mbid || null,
+      url: a.url,
+      rank: parseInt(a["@attr"].rank, 10),
+      images: a.image.map((img: any) => ({
+        url: img["#text"],
+        size: img.size,
+      })),
+    })),
+    meta: {
+      user: attr.user,
+      totalPages: attr.totalPages,
+      page: attr.page,
+      perPage: attr.perPage,
+      total: attr.total,
+    },
+  };
+}
 }

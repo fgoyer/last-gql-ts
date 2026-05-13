@@ -5,10 +5,21 @@ type Query {
     limit: Int
     page: Int
   ): TopAlbumsResponse!
+  userTopArtists(
+    user: String!
+    period: Period
+    limit: Int
+    page: Int
+  ): TopArtistsResponse!
 }
 
 type TopAlbumsResponse {
   albums: [Album!]!
+  meta: PaginationMeta!
+}
+
+type TopArtistsResponse {
+  artists: [TopArtist!]!
   meta: PaginationMeta!
 }
 
@@ -18,7 +29,16 @@ type Album {
   mbid: String
   url: String!
   artist: Artist!
-  images: [AlbumImage!]!
+  images: [MediaImage!]!
+  rank: Int!
+}
+
+type TopArtist {
+  name: String!
+  playcount: String!
+  mbid: String
+  url: String!
+  images: [MediaImage!]!
   rank: Int!
 }
 
@@ -28,7 +48,7 @@ type Artist {
   url: String!
 }
 
-type AlbumImage {
+type MediaImage {
   url: String!
   size: String!
 }
