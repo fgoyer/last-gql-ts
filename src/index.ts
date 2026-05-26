@@ -20,7 +20,7 @@ const server = new ApolloServer({ typeDefs, resolvers });
 
 const { url } = await startStandaloneServer(server, {
   listen: { port: Number(process.env.PORT) || 4000 },
-  context: async () => ({
+  context: () => Promise.resolve({
     dataSources: {
       lastFmAPI: new LastFmAPI(
         process.env.LASTFM_API_KEY!,

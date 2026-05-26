@@ -1,7 +1,12 @@
-
 import { RESTDataSource } from "@apollo/datasource-rest";
-import { PERIOD_MAP } from "./constants";
-import { transformTopAlbums, transformTopArtists } from "./modules/user";
+import { PERIOD_MAP } from "./constants.js";
+import { transformTopAlbums, transformTopArtists } from "./modules/user.js";
+import type {
+  LastFmTopAlbumsResponse,
+  LastFmTopArtistsResponse,
+  TopAlbumsResult,
+  TopArtistsResult,
+} from "./types.js";
 
 export class LastFmAPI extends RESTDataSource {
   private apiKey: string;
@@ -12,16 +17,15 @@ export class LastFmAPI extends RESTDataSource {
     this.apiKey = apiKey;
   }
 
-  // Base params sent with every Last.fm request
-  private baseParams() {
+  private baseParams(): { api_key: string; format: string } {
     return {
       api_key: this.apiKey,
       format: "json",
     };
   }
 
-  async getUserTopAlbums(user: string, period: string, limit?: number, page?: number) {
-    const response = await this.get("", {
+  async getUserTopAlbums(user: string, period: string, limit?: number, page?: number): Promise<TopAlbumsResult> {
+    const response = await this.get<LastFmTopAlbumsResponse>("", {
       params: {
         ...this.baseParams(), method: "user.getTopAlbums", user, period: PERIOD_MAP[period] ?? "overall", limit: String(limit), page: String(page)
       },
@@ -29,8 +33,8 @@ export class LastFmAPI extends RESTDataSource {
     return transformTopAlbums(response);
   }
 
-  async getUserTopArtists(user: string, period: string, limit?: number, page?: number) {
-    const response = await this.get("", {
+  async getUserTopArtists(user: string, period: string, limit?: number, page?: number): Promise<TopArtistsResult> {
+    const response = await this.get<LastFmTopArtistsResponse>("", {
       params: {
         ...this.baseParams(), method: "user.getTopArtists", user, period: PERIOD_MAP[period] ?? "overall", limit: String(limit), page: String(page)
       },
